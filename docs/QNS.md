@@ -55,3 +55,17 @@ On S-small the greedy answers of this engine and of v0.1.43 with Mirai's patch a
 
 - NVIDIA (CUDA) and the AVX2 CPU pool. Not built or run on AMD (HIP), Intel (SYCL) or Mac.
 - Setup and the Terminal do not offer these models yet; start them with a config like the command above.
+
+## With this fork's tools
+
+`tools/build_qns_linux.sh` builds the engine and the picture reader for the card in this PC (CUDA 12.8 or newer).
+`tools/qns_config.py` packs the model on first use and writes the server config:
+
+```sh
+.venv/bin/python tools/qns_config.py --model-dir /models/flash-next-s --size S --gpu 0,1 \
+  --ngram /models/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf
+.venv/bin/python -m serve.server --engine strata --config strata-qns-S.json
+```
+
+`--size S-small` takes the 32 GB build, `--vector off` runs the model without the refusal projection, `--vision off`
+without pictures.

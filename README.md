@@ -1,3 +1,16 @@
+> **This fork** is Strata 0.2.0-beta plus support for Mirai's **Qwen3.8-Flash-Next-S** trellis packs (QNS), the
+> change in [Niko1221/Strata#3384](https://github.com/Niko1221/Strata/pull/3384). Use it until that lands upstream;
+> everything else is upstream Strata. The installers and `strata update` download the upstream engine, which cannot
+> read these packs, so build this one from source (Linux, NVIDIA):
+>
+> ```sh
+> git clone https://github.com/alesha-pro/Strata && cd Strata
+> tools/build_qns_linux.sh
+> ```
+>
+> Weights, the refusal vector and the run steps: [huggingface.co/alesha-pro/Qwen3.8-Flash-Next-S-abliterated-Strata-GGUF](https://huggingface.co/alesha-pro/Qwen3.8-Flash-Next-S-abliterated-Strata-GGUF).
+> Details: [docs/QNS.md](docs/QNS.md).
+
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="apps/host/public/brand/strata-lockup-dark.svg">
