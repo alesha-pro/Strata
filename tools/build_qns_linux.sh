@@ -7,8 +7,17 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-NVCC=${NVCC:-$(command -v nvcc || ls /usr/local/cuda*/bin/nvcc 2>/dev/null | sort -V | tail -1 || true)}
-[ -x "$NVCC" ] || { echo "no nvcc: install the CUDA toolkit 12.8 or newer, or set NVCC=/path/to/nvcc"; exit 1; }
+# the newest nvcc on PATH or in /usr/local/cuda*, unless NVCC is set (a distribution nvcc on PATH is often older)
+nvcc_ver() { "$1" --version 2>/dev/null | sed -n "s/.*release \([0-9]*\)\.\([0-9]*\).*/\1 \2/p" | awk "{print \$1*100+\$2}"; }
+if [ -z "${NVCC:-}" ]; then
+    best=0
+    for n in $(command -v nvcc || true) /usr/local/cuda*/bin/nvcc; do
+        [ -x "$n" ] || continue
+        v=$(nvcc_ver "$n"); [ "${v:-0}" -gt "$best" ] && { NVCC=$n; best=$v; }
+    done
+fi
+[ -x "${NVCC:-}" ] || { echo "no nvcc: install the CUDA toolkit 12.8 or newer, or set NVCC=/path/to/nvcc"; exit 1; }
+[ "$(nvcc_ver "$NVCC")" -ge 1208 ] || { echo "$NVCC is older than CUDA 12.8: install 12.8 or newer, or set NVCC"; exit 1; }
 CUDA_ROOT=$(cd "$(dirname "$NVCC")/.." && pwd)
 ARCH=${ARCH:-$(nvidia-smi --query-gpu=compute_cap --format=csv,noheader | head -1 | tr -d .)}
 echo "GPU sm_$ARCH, $("$NVCC" --version | tail -1)"
